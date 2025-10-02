@@ -1,7 +1,17 @@
 import {Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 
 const Home = () => {
+    const user = useSelector((store) => store.app.user)
+    const navigate = useNavigate()
+    useEffect(()=> {
+        if(user){
+          navigate('/browse')
+        }
+    }, [user, navigate])
     return (
         <div className="relative">
             <img src="bg.png" alt="" className='h-screen w-full object-cover -z-10' />

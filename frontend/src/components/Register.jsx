@@ -2,22 +2,28 @@ import { Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import { toast } from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
 
 const Register = () => {
+  const navigate = useNavigate()
   const { register, handleSubmit, reset } = useForm()
-
+  
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/users/register', data)
+      const res = await axios.post('http://localhost:8000/api/v1/users/register', data,)
 
       if (res.data.success) {
         toast.success(res.data.message)
         reset()
+        navigate('/auth/login')
       }
     } catch (error) {
       toast.error(error.response.data.message)
     }
   }
+
+      
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-black/80 p-8 rounded-lg w-full max-w-md">

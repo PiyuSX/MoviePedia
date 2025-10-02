@@ -34,7 +34,7 @@ export const Login = async (req, res) => {
         const token = jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: '1d'})
 
         res.status(200).cookie('token', token).json ({
-            message: "Login successful",
+            message: `Welcome back ${user.name}`,
             user,
             success: true
         })

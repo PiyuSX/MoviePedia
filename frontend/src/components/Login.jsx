@@ -1,13 +1,43 @@
 import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import {toast} from 'react-hot-toast'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../store/userSlice'
 
 const Login = () => {
+  const { register, handleSubmit, reset } = useForm()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const onSubmit = async (data) => {
+    try {
+      const res = await axios.post('http://localhost:8000/api/v1/users/login', data, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      })
+      if (res.data.success) {
+        toast.success(res.data.message)
+        reset()
+        dispatch(setUser(res.data.user))
+        navigate('/browse')
+      }
+    } catch (error) {
+      toast.error(error.response.data.message)
+    }
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-black/80 p-8 rounded-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-white mb-6">Sign In</h2>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <input
+              {...register("email", { required: true })}
               type="email"
               placeholder="Email"
               className="w-full px-4 py-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600"
@@ -15,6 +45,7 @@ const Login = () => {
           </div>
           <div>
             <input
+              {...register("password", { required: true })}
               type="password"
               placeholder="Password"
               className="w-full px-4 py-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600"

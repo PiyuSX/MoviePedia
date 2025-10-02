@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
+import Browse from './pages/Browse'
 import { Toaster } from 'react-hot-toast'
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
            <Route path='/' element={<Home />} />
             <Route path='/auth/*' element={<Auth />} />
+            <Route path='/browse' element={<Browse />} />
         </Routes>
         <Footer />
       </div>
