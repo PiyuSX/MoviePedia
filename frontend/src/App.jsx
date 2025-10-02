@@ -3,11 +3,13 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   return (
     <BrowserRouter>
       <div className='relative min-h-screen'>
+        <Toaster />
         <Navbar />
         <Routes>
            <Route path='/' element={<Home />} />
