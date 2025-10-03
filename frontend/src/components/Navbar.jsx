@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/v1/users/logout`, {
+      const res = await axios.get("https://moviepedia-dvz0.onrender.com/api/v1/users/logout", {
         withCredentials: true
       })
       if (res.data.success) {

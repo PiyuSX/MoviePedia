@@ -4,19 +4,30 @@ import axios from "axios"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "../utils/constant"
+import { useState } from "react"
 
 const Register = () => {
   const navigate = useNavigate()
   const { register, handleSubmit, reset } = useForm()
+  const [isLoading, setIsLoading] = useState(false)
   
   const onSubmit = async (data) => {
+    console.log('Attempting registration with:', { ...data, password: '***' })
+    console.log('API URL:', API_URL)
+    
+    setIsLoading(true)
+    
     try {
+      // Increased timeout for Render's free tier wake-up time
       const res = await axios.post(`${API_URL}/api/v1/users/register`, data, {
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
+        withCredentials: true,
+        timeout: 60000 // 60 seconds timeout
       })
+
+      console.log('Registration response:', res.data)
 
       if (res.data.success) {
         toast.success(res.data.message)
@@ -24,7 +35,22 @@ const Register = () => {
         navigate('/auth/login')
       }
     } catch (error) {
-      toast.error(error.response.data.message)
+      console.error('Registration error:', error)
+      console.error('Error response:', error.response)
+      console.error('Error request:', error.request)
+      
+      if (error.response) {
+        // Server responded with error
+        toast.error(error.response.data.message || 'Registration failed')
+      } else if (error.request) {
+        // Request made but no response
+        toast.error('Server is waking up, please try again in a moment.')
+      } else {
+        // Something else happened
+        toast.error('An error occurred. Please try again.')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -61,9 +87,10 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-red-700 text-white py-3 rounded font-semibold hover:bg-red-800 transition"
+            disabled={isLoading}
+            className="w-full bg-red-700 text-white py-3 rounded font-semibold hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {isLoading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
         <p className="text-gray-400 mt-4">

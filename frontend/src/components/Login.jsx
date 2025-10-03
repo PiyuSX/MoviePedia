@@ -6,28 +6,41 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../store/userSlice'
 import { API_URL } from '../utils/constant'
+import { useState } from 'react'
 
 const Login = () => {
   const { register, handleSubmit, reset } = useForm()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (data) => {
+    setIsLoading(true)
     try {
       const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
+        withCredentials: true,
+        timeout: 60000 // 60 seconds timeout for Render wake-up
       })
       if (res.data.success) {
         toast.success(res.data.message)
+        localStorage.setItem('user', JSON.stringify(res.data.user))
         reset()
         dispatch(setUser(res.data.user))
         navigate('/browse')
       }
     } catch (error) {
-      toast.error(error.response.data.message)
+      if (error.response) {
+        toast.error(error.response.data.message)
+      } else if (error.request) {
+        toast.error('Server is waking up, please try again in a moment.')
+      } else {
+        toast.error('An error occurred. Please try again.')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -54,9 +67,10 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-red-700 text-white py-3 rounded font-semibold hover:bg-red-800 transition"
+            disabled={isLoading}
+            className="w-full bg-red-700 text-white py-3 rounded font-semibold hover:bg-red-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
         <p className="text-gray-400 mt-4">

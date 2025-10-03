@@ -1,3 +1,6 @@
+// Backend API URL
+export const API_URL = 'https://moviepedia-dvz0.onrender.com'
+
 export const options = {
   method: 'GET',
   headers: {
@@ -11,5 +14,3 @@ export const nowPlayingUrl = 'https://api.themoviedb.org/3/movie/now_playing?lan
 export const popularUrl = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1'
 export const topRatedUrl = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1'
 export const upcomingUrl = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1'
-
-export const API_URL =  "https://moviepedia-dvz0.onrender.com"
