@@ -16,6 +16,7 @@ const Register = () => {
     console.log('API URL:', API_URL)
     
     setIsLoading(true)
+    toast.loading('Connecting to server... This may take up to 60 seconds if the server is sleeping.', { id: 'loading' })
     
     try {
       // Increased timeout for Render's free tier wake-up time
@@ -28,6 +29,7 @@ const Register = () => {
       })
 
       console.log('Registration response:', res.data)
+      toast.dismiss('loading')
 
       if (res.data.success) {
         toast.success(res.data.message)
@@ -35,6 +37,7 @@ const Register = () => {
         navigate('/auth/login')
       }
     } catch (error) {
+      toast.dismiss('loading')
       console.error('Registration error:', error)
       console.error('Error response:', error.response)
       console.error('Error request:', error.request)
@@ -44,7 +47,7 @@ const Register = () => {
         toast.error(error.response.data.message || 'Registration failed')
       } else if (error.request) {
         // Request made but no response
-        toast.error('Server is waking up, please try again in a moment.')
+        toast.error('Server took too long to respond. Please try again - it should be faster now!')
       } else {
         // Something else happened
         toast.error('An error occurred. Please try again.')

@@ -16,6 +16,8 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true)
+    toast.loading('Connecting to server... This may take up to 60 seconds if the server is sleeping.', { id: 'loading' })
+    
     try {
       const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
         headers: {
@@ -24,6 +26,9 @@ const Login = () => {
         withCredentials: true,
         timeout: 60000 // 60 seconds timeout for Render wake-up
       })
+      
+      toast.dismiss('loading')
+      
       if (res.data.success) {
         toast.success(res.data.message)
         localStorage.setItem('user', JSON.stringify(res.data.user))
@@ -32,10 +37,12 @@ const Login = () => {
         navigate('/browse')
       }
     } catch (error) {
+      toast.dismiss('loading')
+      
       if (error.response) {
         toast.error(error.response.data.message)
       } else if (error.request) {
-        toast.error('Server is waking up, please try again in a moment.')
+        toast.error('Server took too long to respond. Please try again - it should be faster now!')
       } else {
         toast.error('An error occurred. Please try again.')
       }
