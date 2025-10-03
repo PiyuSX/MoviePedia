@@ -26,20 +26,20 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="fixed top-5 left-0 right-0 mx-40 z-50">
-      <div className="flex justify-between items-center w-full ">
-        <div className="text-3xl font-bold text-red-700">
+    <nav className="sticky top-0 bg-black bg-opacity-95 shadow-md py-4 px-4 md:px-8 lg:px-16 z-50">
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        <div className="text-2xl md:text-3xl font-bold text-red-700 hover:text-red-600 transition-colors">
           <Link to="/">MoviePedia</Link>
         </div>
         {!user && (
-          <Link className="bg-red-700 text-white px-4 py-1 rounded" to="/auth/login">
+          <Link className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-md transition-colors font-medium" to="/auth/login">
             Sign In
           </Link>
         )}
         {user && (
           <div className="flex items-center gap-4">
-            <span className="text-lg">{user.name}</span>
-            <button className="bg-red-700 text-white px-4 py-1 rounded" onClick={handleSignOut}>Sign Out</button>
+            <span className="text-lg text-white hidden md:inline">{user.name}</span>
+            <button className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-md transition-colors font-medium" onClick={handleSignOut}>Sign Out</button>
           </div>
         )}
       </div>
