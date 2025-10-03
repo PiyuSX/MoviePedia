@@ -16,7 +16,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true)
-    toast.loading('Connecting to server... This may take up to 60 seconds if the server is sleeping.', { id: 'loading' })
+    toast.loading('Connecting to server... Please wait, this may take up to 90 seconds on first request.', { id: 'loading' })
     
     try {
       const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
@@ -24,7 +24,7 @@ const Login = () => {
           'Content-Type': 'application/json'
         },
         withCredentials: true,
-        timeout: 60000 // 60 seconds timeout for Render wake-up
+        timeout: 90000 // 90 seconds timeout for Render wake-up
       })
       
       toast.dismiss('loading')
@@ -42,7 +42,7 @@ const Login = () => {
       if (error.response) {
         toast.error(error.response.data.message)
       } else if (error.request) {
-        toast.error('Server took too long to respond. Please try again - it should be faster now!')
+        toast.error('Connection timeout. The server is waking up - please click Sign In again in 10 seconds!')
       } else {
         toast.error('An error occurred. Please try again.')
       }

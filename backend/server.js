@@ -26,6 +26,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is running' })
+})
+
 //api routes
 app.use('/api/v1/users', userRoutes)
 

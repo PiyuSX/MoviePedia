@@ -2,16 +2,34 @@ import {Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
+import { API_URL } from '../utils/constant'
 
 
 const Home = () => {
     const user = useSelector((store) => store.app.user)
     const navigate = useNavigate()
+    
     useEffect(()=> {
         if(user){
           navigate('/browse')
         }
     }, [user, navigate])
+    
+    // Wake up the backend server on page load
+    useEffect(() => {
+        const wakeUpServer = async () => {
+            try {
+                console.log('Waking up backend server...')
+                await axios.get(`${API_URL}/health`, { timeout: 5000 })
+                console.log('Backend server is awake!')
+            } catch {
+                console.log('Server wake-up initiated, may take a moment...')
+            }
+        }
+        wakeUpServer()
+    }, [])
+    
     return (
         <div className="relative">
             <img src="bg.png" alt="" className='h-screen w-full object-cover -z-10' />
