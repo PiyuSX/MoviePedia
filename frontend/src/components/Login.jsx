@@ -16,39 +16,60 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true)
-    toast.loading('Connecting to server... Please wait, this may take up to 90 seconds on first request.', { id: 'loading' })
+    toast.loading('Connecting to server... Please wait.', { id: 'loading' })
     
-    try {
-      const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true,
-        timeout: 90000 // 90 seconds timeout for Render wake-up
-      })
-      
-      toast.dismiss('loading')
-      
-      if (res.data.success) {
-        toast.success(res.data.message)
-        localStorage.setItem('user', JSON.stringify(res.data.user))
-        reset()
-        dispatch(setUser(res.data.user))
-        navigate('/browse')
+    const maxRetries = 3
+    let attempt = 0
+    
+    while (attempt < maxRetries) {
+      try {
+        attempt++
+        
+        if (attempt > 1) {
+          toast.loading(`Retry attempt ${attempt}/${maxRetries}... Server is waking up.`, { id: 'loading' })
+        }
+        
+        const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true,
+          timeout: 120000 // 120 seconds timeout for Render wake-up
+        })
+        
+        toast.dismiss('loading')
+        
+        if (res.data.success) {
+          toast.success(res.data.message)
+          localStorage.setItem('user', JSON.stringify(res.data.user))
+          reset()
+          dispatch(setUser(res.data.user))
+          navigate('/browse')
+        }
+        return // Success, exit the function
+        
+      } catch (error) {
+        console.error(`Login attempt ${attempt} error:`, error)
+        
+        if (error.response) {
+          // Server responded with error - don't retry
+          toast.dismiss('loading')
+          toast.error(error.response.data.message)
+          setIsLoading(false)
+          return
+        } else if (attempt < maxRetries) {
+          // No response, but we have retries left
+          console.log(`Attempt ${attempt} failed, retrying...`)
+          await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds before retry
+        } else {
+          // No more retries left
+          toast.dismiss('loading')
+          toast.error('Unable to connect to server. Please try again later or check your internet connection.')
+        }
       }
-    } catch (error) {
-      toast.dismiss('loading')
-      
-      if (error.response) {
-        toast.error(error.response.data.message)
-      } else if (error.request) {
-        toast.error('Connection timeout. The server is waking up - please click Sign In again in 10 seconds!')
-      } else {
-        toast.error('An error occurred. Please try again.')
-      }
-    } finally {
-      setIsLoading(false)
     }
+    
+    setIsLoading(false)
   }
 
   return (

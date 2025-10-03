@@ -16,45 +16,60 @@ const Register = () => {
     console.log('API URL:', API_URL)
     
     setIsLoading(true)
-    toast.loading('Connecting to server... Please wait, this may take up to 90 seconds on first request.', { id: 'loading' })
+    toast.loading('Connecting to server... Please wait.', { id: 'loading' })
     
-    try {
-      // Increased timeout for Render's free tier wake-up time
-      const res = await axios.post(`${API_URL}/api/v1/users/register`, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true,
-        timeout: 90000 // 90 seconds timeout
-      })
+    const maxRetries = 3
+    let attempt = 0
+    
+    while (attempt < maxRetries) {
+      try {
+        attempt++
+        
+        if (attempt > 1) {
+          toast.loading(`Retry attempt ${attempt}/${maxRetries}... Server is waking up.`, { id: 'loading' })
+        }
+        
+        // Increased timeout for Render's free tier wake-up time
+        const res = await axios.post(`${API_URL}/api/v1/users/register`, data, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true,
+          timeout: 120000 // 120 seconds timeout
+        })
 
-      console.log('Registration response:', res.data)
-      toast.dismiss('loading')
+        console.log('Registration response:', res.data)
+        toast.dismiss('loading')
 
-      if (res.data.success) {
-        toast.success(res.data.message)
-        reset()
-        navigate('/auth/login')
+        if (res.data.success) {
+          toast.success(res.data.message)
+          reset()
+          navigate('/auth/login')
+        }
+        return // Success, exit the function
+        
+      } catch (error) {
+        console.error(`Registration attempt ${attempt} error:`, error)
+        
+        if (error.response) {
+          // Server responded with error - don't retry
+          toast.dismiss('loading')
+          toast.error(error.response.data.message || 'Registration failed')
+          setIsLoading(false)
+          return
+        } else if (attempt < maxRetries) {
+          // No response, but we have retries left
+          console.log(`Attempt ${attempt} failed, retrying...`)
+          await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds before retry
+        } else {
+          // No more retries left
+          toast.dismiss('loading')
+          toast.error('Unable to connect to server. Please try again later or check your internet connection.')
+        }
       }
-    } catch (error) {
-      toast.dismiss('loading')
-      console.error('Registration error:', error)
-      console.error('Error response:', error.response)
-      console.error('Error request:', error.request)
-      
-      if (error.response) {
-        // Server responded with error
-        toast.error(error.response.data.message || 'Registration failed')
-      } else if (error.request) {
-        // Request made but no response - server might still be waking up
-        toast.error('Connection timeout. The server is waking up - please click Sign Up again in 10 seconds!')
-      } else {
-        // Something else happened
-        toast.error('An error occurred. Please try again.')
-      }
-    } finally {
-      setIsLoading(false)
     }
+    
+    setIsLoading(false)
   }
 
       
