@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import axios from "axios"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
+import { API_URL } from "../utils/constant"
 
 const Register = () => {
   const navigate = useNavigate()
@@ -10,7 +11,12 @@ const Register = () => {
   
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/users/register', data,)
+      const res = await axios.post(`${API_URL}/api/v1/users/register`, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      })
 
       if (res.data.success) {
         toast.success(res.data.message)

@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { setUser } from "../store/userSlice";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../utils/constant";
 
 const Navbar = () => {
   const user = useSelector((store) => store.app.user);
@@ -12,7 +13,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/users/logout', {
+      const res = await axios.get(`${API_URL}/api/v1/users/logout`, {
         withCredentials: true
       })
       if (res.data.success) {

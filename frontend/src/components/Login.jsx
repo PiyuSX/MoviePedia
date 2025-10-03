@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../store/userSlice'
+import { API_URL } from '../utils/constant'
 
 const Login = () => {
   const { register, handleSubmit, reset } = useForm()
@@ -13,7 +14,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/users/login', data, {
+      const res = await axios.post(`${API_URL}/api/v1/users/login`, data, {
         headers: {
           'Content-Type': 'application/json'
         },
