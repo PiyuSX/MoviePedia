@@ -12,4 +12,4 @@ export const popularUrl = 'https://api.themoviedb.org/3/movie/popular?language=e
 export const topRatedUrl = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1'
 export const upcomingUrl = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1'
 
-export const API_URL = `http://localhost:8000`
+export const API_URL =  "https://moviepedia-dvz0.onrender.com"
